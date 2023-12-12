@@ -23,7 +23,6 @@ function bootstrap()
             {
                echo http_response_code(400); exit;
             }
-            
         break;
         case 'POST':
             if(!isset($_POST['csrf']) | $_POST['csrf']=='')
@@ -38,7 +37,6 @@ function bootstrap()
             {
                 echo http_response_code(400); exit;
             }
-            
         break;
         default: echo http_response_code(405); exit;
     }
@@ -53,21 +51,27 @@ if(empty($_REQUEST))
     exit;
 }
 
-$macNuc  = $_REQUEST["mac_nuc"];
-$rmcRMC  = $_REQUEST["mac_rmc"];
-$ipModen = $_REQUEST["ip_modem"];
-$ipNuc   = $_REQUEST["ip_nuc"];
+$macNuc  = $_REQUEST["macNuc"];
+$ipModen = $_REQUEST["publicIP"];
+$localIP = $_REQUEST["localIP"];
+$rmcIP   = $_REQUEST["rmcIP"];
 $data    = $_REQUEST['rmc_data'];
 
 $uid = uniqid('2ysa');
 
 $datetime =  date("Y/m/d H:i:s");    
 
-#$conn = connect();
+$conn = connect();
 
-$SQL="INSERT INTO public.predatasets (uid, raw_data, raw_bytes, datetime, rmc_ip, rmc_mac, processed, ip_modem, nuc_ip) VALUES( ?, ?, ? , ? , ? , ? , ?, ? , ? )";
-
+$SQL="INSERT INTO public.predatasets (uid, raw_data, raw_bytes, datetime, rmc_ip, processed, ip_modem, nuc_ip) VALUES( ?, ?, ? , ? , ? , ? , ?, ?  )";
+$stmt= $pdo->prepare($SQL);
+$stmt->execute([$uid, $data, $data ,$datetime, $rmcIP, '0', $ipModen , $localIP]);
 
 var_dump($data);
+
+echo json_encode(
+    ['status' => 200,
+    'message' => "Data Saved"]);
+exit
 
 ?>
